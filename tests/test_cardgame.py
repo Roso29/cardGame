@@ -7,7 +7,6 @@ def test_player_lose_health():
     player1.LoseHealth(10)
     assert player1.GetHealth() == 30-10
 
-
 def test_set_up_deck():
     player1 = Player()
     assert len(player1.hand)+len(player1.deck) == 20
@@ -30,12 +29,11 @@ def test_overload_card():
     newNumOfCards = len(player1.GetHand())
     assert newNumOfCards==5
 
-
 def test_use_card():
     player1 = Player()
     player1.mana = 100
     numOfCards = len(player1.GetHand())
-    player1.Attack(cardIDS=[0,1])
+    player1.RemoveCardsFromHand(cardIDS=[0,1])
     newNumOfCards = len(player1.GetHand())
     assert numOfCards-newNumOfCards == 2
 
@@ -69,8 +67,85 @@ def test_player_attack_player():
     finishingHealth = game.player2.GetHealth()
     assert startingHealth-finishingHealth == 10
 
+def test_player_call_isDead_health_drop_below_zero():
+    player = Player()
+    player.LoseHealth(32)
+    isDead = player.IsDead()
+    assert isDead == True
 
+def test_player_call_isDead_health_drop_above_zero():
+    player = Player()
+    player.LoseHealth(29)
+    isDead = player.IsDead()
+    assert isDead == False
 
+def test_increment_mana_below_ten():
+    player = Player()
+    player.mana = 5
+    player.IncrementMana()
+    assert player.mana == 6
 
+def test_increment_mana_above_ten():
+    player = Player()
+    player.mana = 10
+    player.IncrementMana()
+    assert player.mana == 10
+
+def test_IsValid_with_valid_deck():
+    player=Player()
+    cardIDs = [0,1,2]
+    isValidHand = player.IsValidHand(cardIDs)
+    assert isValidHand==True
+
+def test_IsValid_with_invalid_deck():
+    player=Player()
+    cardIDs = [0,1,4]
+    isValidHand = player.IsValidHand(cardIDs)
+    assert isValidHand==False
+
+def test_player_attack_with_out_of_bounds_card():
+    player = Player()
+    try:
+        player.Attack([3])
+        assert False
+    except IllegalCard:
+        assert True
+
+def test_player_attack_with_legal_card():
+    player = Player()
+    player.mana = 10
+    try:
+        player.Attack([2])
+        assert True
+    except IllegalCard:
+        assert False
+
+def test_no_playable_cards():
+    player = Player()
+    player.mana = 2
+    canPlayCard = player.HasPlayableHand()
+    assert canPlayCard == False
+
+def test_has_playable_cards():
+    player = Player()
+    player.mana = 10
+    canPlayCard = player.HasPlayableHand()
+    assert canPlayCard == True
+
+def test_user_enters_invalid_input():
+    game = Game()
+    try:
+        game.ValidateUserInput('0 1 2 a')
+        assert False
+    except InvalidUserInput:
+        assert True
+
+def test_user_enters_valid_input():
+    game = Game()
+    try:
+        game.ValidateUserInput('0 1 2 4')
+        assert True
+    except InvalidUserInput:
+        assert False
 #Shuffled Deck
 #[3, 7, 6, 5, 0, 6, 4, 1, 1, 3, 2, 3, 2, 8, 2, 5, 3, 0, 4, 4]
