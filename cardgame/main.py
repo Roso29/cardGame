@@ -51,8 +51,6 @@ class Player():
         for index in sorted(cardIDS, reverse=True):
             del self.hand[index]
 
-
-
 class Game():
     def __init__(self):
         self.player1 = Player()
